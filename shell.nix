@@ -8,6 +8,14 @@ in pkgs.mkShell {
       python-pkgs.types-requests
       python-pkgs.matplotlib
       python-pkgs.seaborn
+      python-pkgs.tqdm
+      python-pkgs.ipykernel
+      python-pkgs.pip
+      python-pkgs.ollama
     ]))
   ];
+
+  shellHook = ''
+    code .
+  '';
 }
