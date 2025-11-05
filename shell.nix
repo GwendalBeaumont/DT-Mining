@@ -1,6 +1,10 @@
 let
   pkgs = import <nixpkgs> {};
 in pkgs.mkShell {
+  nativeBuildInputs = with pkgs.buildPackages; [
+    vscode.fhs
+    ollama
+  ];
   packages = [
     (pkgs.python3.withPackages (python-pkgs: [
       python-pkgs.pandas
@@ -16,6 +20,7 @@ in pkgs.mkShell {
   ];
 
   shellHook = ''
+    ollama pull deepseek-r1:8b
     code .
   '';
 }
