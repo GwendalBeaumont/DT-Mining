@@ -30,13 +30,13 @@ def get_keywords(response: str) -> list[str]:
     end_index = response.find('```', start_index)
 
     if start_index<end_index and end_index != -1 and start_index!=0:
-        json_text = response[start_index:end_index].strip()
+        response = response[start_index:end_index].strip()
 
-        # Transform the response to a list of keywords
-        data = json.loads(json_text)
+    # Transform the response to a list of keywords
+    data = json.loads(response)
 
-        if 'keywords' in data:
-            return data['keywords']
+    if 'keywords' in data:
+        return data['keywords']
     
     return []
 
