@@ -3,26 +3,71 @@ import requests
 import time
 import csv
 
-GITHUB_TOKEN = ""
-HEADERS = {"Authorization": f"token {GITHUB_TOKEN}"}
+from gql import Client, gql
+from gql.transport.aiohttp import AIOHTTPTransport
 
-def is_github_token_present():
-    """Verifies if the GITHUB_TOKEN variable is set.
-    """
+def is_github_token_present() -> bool:
+    """Verifies if the GITHUB_TOKEN variable is set."""
     try:
-        GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
-        print("GITHUB_TOKEN found:", "*" * (len(GITHUB_TOKEN) - 5) + GITHUB_TOKEN[-5:])
+        os.environ["GITHUB_TOKEN"]
+        print("GITHUB_TOKEN found")
+        return True
     except KeyError:
         print("Error: GITHUB_TOKEN is not set. Please add it as an environment variable.")
+    return False
 
 
-def search_github_repositories(query: str, max_results: int = 500, per_page: int = 100, sort_by: str = "stars") -> list:
+def get_github_token() -> str:
+    """Get the GITHUB_TOKEN environment variable."""
+    if is_github_token_present():
+        return os.environ["GITHUB_TOKEN"]
+    return ""
+
+
+def search_github_repositories(keyword: str, github_token: str, max_results: int = 500, per_page: int = 100, start_page: int = 1, sort_by: str = "stars") -> list:
     repositories: list = []
-    page = 1
+
+    transport = AIOHTTPTransport(
+        url="https://api.github.com/graphql",
+        headers={"Authorization": f"bearer {github_token}"}
+    )
+    client = Client(transport=transport)
+
+    headers = {
+        "Authorization": f"bearer {github_token}"
+    }
+
+    query = f"""
+        query {{
+            search(type:REPOSITORY, query:"{keyword}", first:100) {{
+                repositoryCount
+                edges {{
+                    node {{
+                        ... on Repository {{
+                            name
+                            description
+                            url
+                            stargazerCount
+                            forkCount
+                            languages(first:10,orderBy:{{field:SIZE,direction:DESC}}) {{
+                                edges {{
+                                    node {{
+                                        name
+                                    }}
+                                size
+                                cursor
+                                }}
+                            }}
+                        }}
+                    }}
+                }}
+            }}
+        }}
+    """
 
     while len(repositories) < max_results:
-        url = f"https://api.github.com/search/repositories?q={query}&per_page={per_page}&page={page}&sort={sort_by}"
-        response = requests.get(url, headers=HEADERS)
+        url = "https://api.github.com/graphql"
+        response = requests.post(url, json={"query": query}, headers=headers)
         try:
             data = response.json()
         except requests.exceptions.JSONDecodeError:
@@ -43,14 +88,15 @@ def search_github_repositories(query: str, max_results: int = 500, per_page: int
 
     return repositories[:max_results]
 
-def get_repository_details(repo):
+def get_repository_details(repo, github_token: str):
     repo_url = repo['url']
     contributors_url = repo_url + "/contributors"
     commits_url = repo_url + "/commits"
+    headers = {"Authorization": f"token {github_token}"}
 
     try:
-        contributors_response = requests.get(contributors_url, headers=HEADERS)
-        commits_response = requests.get(commits_url, headers=HEADERS)
+        contributors_response = requests.get(contributors_url, headers=headers)
+        commits_response = requests.get(commits_url, headers=headers)
         contributors_count = len(contributors_response.json()) if contributors_response.status_code == 200 else 0
         commits_count = len(commits_response.json()) if commits_response.status_code == 200 else 0
     except requests.exceptions.JSONDecodeError:
@@ -61,13 +107,13 @@ def get_repository_details(repo):
 
     return contributors_count, commits_count, open_issues_count
 
-def save_to_csv(repositories, filename="digital_twin_repos_gitHub.csv"):
+def save_to_csv(repositories, filename="digital_twin_repos_github.csv", github_token: str=""):
     with open("out/" + filename, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerow(["Name", "Stars", "Forks", "Language", "Description", "URL", "Contributors", "Commits", "Open Issues"])
 
         for repo in repositories:
-            contributors, commits, open_issues = get_repository_details(repo)
+            contributors, commits, open_issues = get_repository_details(repo, github_token=github_token)
             writer.writerow([
                 repo['name'],
                 repo['stargazers_count'],
