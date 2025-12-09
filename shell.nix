@@ -16,6 +16,7 @@ in pkgs.mkShell {
       python-pkgs.ipykernel
       python-pkgs.pip
       python-pkgs.gql
+      python-pkgs.aiohttp
       # python-pkgs.ollama
     ]))
   ];
