@@ -167,7 +167,7 @@ async def search_github_repositories(keyword: str, github_token: str) -> list:
         end_date = start_date + relativedelta(day=31)
 
     # TEMP: save to file
-    with open(f"out/digital_twin_repos_github_{today.strftime("%Y%m%d_%H%M%S")}.csv", 'w', encoding='utf-8') as file:
+    with open(f"out/digital_twin_repos_github_{today.strftime("%Y%m%d_%H%M%S")}.json", 'w', encoding='utf-8') as file:
         json.dump(repositories, file, indent=4)
     
     return repositories
