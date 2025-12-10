@@ -121,8 +121,15 @@ async def search_github_repositories(keyword: str, github_token: str) -> list:
                     node {
                         ... on Repository {
                             name
+                            owner { login }
                             description
                             url
+                            id
+                            archivedAt
+                            createdAt
+                            pushedAt
+                            diskUsage
+                            isFork
                             stargazerCount
                             forkCount
                             languages(first:10,orderBy:{field:SIZE,direction:DESC}) {
@@ -164,6 +171,35 @@ async def search_github_repositories(keyword: str, github_token: str) -> list:
         json.dump(repositories, file, indent=4)
     
     return repositories
+
+
+def get_latest_hash(owner, repo_name, github_token: str) -> str:
+    """Gets the latest hash 'sha' for a given repository."""
+    request_url = f"https://api.github.com/repos/{owner}/{repo_name}/commits?per_page=1"
+
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Authorization": f"Bearer {github_token}"
+    }
+
+    dataFetched = False
+    while not dataFetched:
+        try:
+            response = requests.get(request_url, headers=headers)
+            dataFetched = True
+        except requests.exceptions.SSLError:
+            print("SSLError: retrying...")
+
+
+    if response.status_code != 200:
+        return ""
+    
+    try:
+        data = response.json()
+        return data[0]["sha"]
+    except requests.exceptions.JSONDecodeError:
+        print("Error: Empty or badly formatted response received from GitHub API")
 
 def get_repository_details(repo, github_token: str):
     repo_url = repo['url']
