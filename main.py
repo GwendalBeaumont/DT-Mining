@@ -1,25 +1,29 @@
-from github_scraper import is_github_token_present, search_github_repositories, save_to_csv
-from software_heritage_scraper import search_projects_by_metadata
+import asyncio
+import json
 
-def main():
-    QUERY = "digital twin"
-    MAX_RESULTS = 2000
-    PER_PAGE = 100
-    
-    is_github_token_present()
-    print(f"Search GitHub projects for : {QUERY}")
-    repos = search_github_repositories(QUERY, MAX_RESULTS, PER_PAGE, sort_by="stars")
-    print(f"{len(repos)} projects found.")
-    save_to_csv(repos)
-    print("The results were saved in 'digital_twin_repos_gitHub.csv'")
-    
-    print(f"Search Software Heritage projects for : {QUERY}")
-    projects_metadata = search_projects_by_metadata()
-    print(f"{len(projects_metadata)} projects found.")
-    df = pd.DataFrame(projects_metadata)
-    file_path = "digital_twin_repos_softwareHeritage.csv"
-    df.to_csv(file_path, index=False)
-    print("The results were saved in 'digital_twin_repos_softwareHeritage.csv'")
+from datetime import datetime
+from github_scraper import get_github_token, search_github_repositories, get_latest_hash
+
+async def main():
+    keyword = "digital twin"
+    github_token = get_github_token()
+    repos = await search_github_repositories(keyword=keyword, github_token=github_token)
+
+    json.load("out/digital_twin_repos_github_20251210_132322.json")
+
+    n = len(repos)
+    for i, repository in enumerate(repos):
+        print(f"Getting sha for repository {i}/{n}")
+        owner = repository["owner"]["login"]
+        repo_name = repository["name"]
+        sha = get_latest_hash(owner=owner, repo_name=repo_name, github_token=github_token)
+
+        repository["latest_commit"] = sha
+        repository["link_to_latest_commit"] = f"https://github.com/{owner}/{repo_name}/tree/{sha}"
+
+    with open(f"out/digital_twin_repos_github_with_sha_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json", 'w', encoding='utf-8') as file:
+        json.dump(repos, file, indent=4)
+
     
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

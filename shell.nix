@@ -3,7 +3,7 @@ let
 in pkgs.mkShell {
   nativeBuildInputs = with pkgs.buildPackages; [
     vscode.fhs
-    ollama
+    # ollama
   ];
   packages = [
     (pkgs.python3.withPackages (python-pkgs: [
@@ -15,12 +15,13 @@ in pkgs.mkShell {
       python-pkgs.tqdm
       python-pkgs.ipykernel
       python-pkgs.pip
-      python-pkgs.ollama
+      python-pkgs.gql
+      python-pkgs.aiohttp
+      # python-pkgs.ollama
     ]))
   ];
 
   shellHook = ''
-    ollama pull deepseek-r1:8b
     code .
   '';
 }
