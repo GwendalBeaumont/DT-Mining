@@ -37,7 +37,7 @@ def create_client(github_token: str) -> Client:
 
 
 async def get_repository_count(keyword: str, client: Client) -> int:
-    """Runs a small query to get the respositoryCount value."""
+    """Runs a small query to get the repositoryCount value."""
     query = gql("""
         query getReposCount ($query: String!) {
             search(type:REPOSITORY, query:$query) {
