@@ -137,8 +137,7 @@ def search_multiple_keywords(keywords, per_page=10, pages=1, save_path=outputfil
 
     return existing_df
 
-keywords = [#'digital twins'
-            "Digital Twin Framework"]
+# Keywords are loaded from the CSV database below.
 
 keywords_DB_df = pd.read_csv("out/keywords_database.csv")
 
