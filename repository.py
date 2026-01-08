@@ -11,13 +11,13 @@ class Repository:
     
     
     def __init__(self, name, description, url, forks, stars, language, contributors, commits, open_issues):
-        name = name
-        description = description
-        url = url
-        forks = forks
-        stars = stars
-        language = language
-        contributors = contributors
-        commits = commits
-        open_issues = open_issues
+        self.name = name
+        self.description = description
+        self.url = url
+        self.forks = forks
+        self.stars = stars
+        self.language = language
+        self.contributors = contributors
+        self.commits = commits
+        self.open_issues = open_issues
     
