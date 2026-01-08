@@ -6,7 +6,7 @@ def search_projects_by_metadata(query: str, max_results: int, per_page: int=50) 
     metarequest = 0
     projects = []
     base_url = "https://archive.softwareheritage.org/api/1/origin/metadata-search/"
-    params: dict[str, Any] = {"fulltext": {query}, "per_page": per_page}
+    params: dict[str, Any] = {"fulltext": query, "per_page": per_page}
     next_page = base_url
 
     while next_page and metarequest < max_results:
