@@ -1,6 +1,10 @@
 let
   pkgs = import <nixpkgs> {};
 in pkgs.mkShell {
+  nativeBuildInputs = with pkgs.buildPackages; [
+    vscode.fhs
+    # ollama
+  ];
   packages = [
     (pkgs.python3.withPackages (python-pkgs: [
       python-pkgs.pandas
@@ -8,6 +12,16 @@ in pkgs.mkShell {
       python-pkgs.types-requests
       python-pkgs.matplotlib
       python-pkgs.seaborn
+      python-pkgs.tqdm
+      python-pkgs.ipykernel
+      python-pkgs.pip
+      python-pkgs.gql
+      python-pkgs.aiohttp
+      # python-pkgs.ollama
     ]))
   ];
+
+  shellHook = ''
+    code .
+  '';
 }

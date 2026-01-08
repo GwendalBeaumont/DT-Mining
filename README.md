@@ -17,5 +17,5 @@ General contributions guidelines and how-tos can be found in the [CONTRIBUTING f
 
 ## License
 
-This project is licensed under the MIT License. Please see the [license file](LICENSE) for more information. [tl;dr](https://www.tldrlegal.com/license/mit-license) A short, permissive software license. Basically, you can do whatever you want as long as you include the original copyright and license notice in any copy of the software/source.  There are many variations of this license in use.
+This project is licensed under the GPL-3.0 license. Please see the [license file](LICENSE) for more information. [tl;dr](https://www.tldrlegal.com/license/gnu-general-public-license-v3-gpl-3) You may copy, distribute and modify the software as long as you track changes/dates in source files. Any modifications to or software including (via compiler) GPL-licensed code must also be made available under the GPL along with build & install instructions.
 
