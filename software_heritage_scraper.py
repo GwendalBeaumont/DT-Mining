@@ -14,15 +14,15 @@ def search_projects_by_metadata(query: str, max_results: int, per_page: int=50) 
         response = requests.get(next_page, params=params)
         if response.status_code == 200:
             data = response.json()
-            projects.extend(data)  # Ajouter les résultats
-            # L'API de Software Heritage ne fournit pas toujours un lien "next"
+            projects.extend(data)  # Add the results
+            # The Software Heritage API does not always provide a "next" link
             if len(data) < 50:
-                break  # Plus de pages à récupérer
+                break  # No more pages to retrieve
 
             time.sleep(1)
 
         else:
-            print("Erreur lors de la requête:", response.status_code, response.text)
+            print("Error during request:", response.status_code, response.text)
             break
 
     return projects
