@@ -9,8 +9,6 @@ async def main():
     github_token = get_github_token()
     repos = await search_github_repositories(keyword=keyword, github_token=github_token)
 
-    json.load("out/digital_twin_repos_github_20251210_132322.json")
-
     n = len(repos)
     for i, repository in enumerate(repos):
         print(f"Getting sha for repository {i}/{n}")
